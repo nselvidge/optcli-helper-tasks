@@ -109,10 +109,12 @@ module.exports = function ( grunt ) {
       },
       scripts: {
         files: [ '**/*.js' ],
+        tasks: [ 'jshint' ]
         options: {
           livereload: livereloadOptions
         }
-      }
+      },
+
     },
     jshint: {
       options: {
@@ -155,16 +157,18 @@ module.exports = function ( grunt ) {
       "'": '\\\'',
       "\n": '\\n'
     };
+    
     function escapeHtml( string ) {
-      return String( string ).replace( /[&"'\n]/g, function ( s ) {
-        return entityMap[ s ];
-      } );
-    }
+        return String( string ).replace( /[&"'\n]/g, function ( s ) {
+          return entityMap[ s ];
+        } );
+      }
+    
     // Identify all project JS files with a glob
     var projectArray = glob.sync( '**/global.js' );
 
     projectArray.forEach( function ( projectJs ) {
-      var htmlObjectString = "/* jsInsert:start \n * The experimentHtml object is created using a grunt task\n * on the local machine then uploaded by using the FunnelEnvy\n * Optimizely CLI. Documentation on the Optimizely CLI can be \n * found here: https://github.com/funnelenvy/optimizely-cli\n * The HTML template files can be found in the project git repo\n */\n \nwindow.experimentHtml = {};\n";
+      var htmlObjectString = "/* jsInsert:start \n * The experimentHtml object is created using a grunt task\n * on the local machine then uploaded by using the FunnelEnvy\n * Optimizely CLI. Documentation on the Optimizely CLI can be \n * found here: https://github.com/funnelenvy/optimizely-cli\n * The HTML template files can be found in the project git repo\n */\n \nwindow.experimentHtml = window.experimentHtml || {};\n";
       var fileArray = glob.sync( path.dirname( projectJs ) + '/templates/*.html' );
 
       var globalJsFile = projectJs;
@@ -187,7 +191,7 @@ module.exports = function ( grunt ) {
         htmlObjectString += property.string;
 
       } );
-      htmlObjectString += "\n/* jsInsert:end */\n"
+      htmlObjectString += "\n/* jsInsert:end */"
 
       if ( globalJs.match( /\/\*\sjsInsert:start([\s\S]*)jsInsert:end\s\*\// ) && templateExists ) {
         globalJs = globalJs.replace( /\/\*\sjsInsert:start([\s\S]*)jsInsert:end\s\*\//, htmlObjectString );
@@ -202,10 +206,10 @@ module.exports = function ( grunt ) {
   } );
 };
 
-function getCrt(){
+function getCrt() {
   return "-----BEGIN CERTIFICATE-----\nMIIDLjCCAhYCCQCmv5mCRcYMYDANBgkqhkiG9w0BAQUFADBZMQswCQYDVQQGEwJB\nVTETMBEGA1UECBMKU29tZS1TdGF0ZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0\ncyBQdHkgTHRkMRIwEAYDVQQDEwlsb2NhbGhvc3QwHhcNMTQwNzIwMTYwMTI5WhcN\nMTUwNzIwMTYwMTI5WjBZMQswCQYDVQQGEwJBVTETMBEGA1UECBMKU29tZS1TdGF0\nZTEhMB8GA1UEChMYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMRIwEAYDVQQDEwls\nb2NhbGhvc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCujUxqRCt8\n//cOs+FPwYYDHuAQGHqCHVGR9kC6CYGJezNrHwOUodGUSieKj8S0phoixZeNAGwY\nd1xKRpkE5cB11RQ/uJ/SF0OPlI9/WQaScEcczp9moYSRbqaaEX5lNzR506hIouSL\nv2L83WcMnySPJEwEaXGhh8YeKt4NOffz4Lys/jBVcgS/gUErp0Xj1IAnQKap9wa4\nq3EjyqjtokbsvHQYu5+IPJyyMYq+67Cg4EY+c5vBFVdy9NC2DmAEYTbF6N7DeiB5\nJt2c0A8AbYp1yh/IfJFbaSaMXsCbkuY+E/uXTWmx+Xe90Y1K0UqGinXBsOzkbxdz\nebQ9L8KOMn7TAgMBAAEwDQYJKoZIhvcNAQEFBQADggEBAHQCgQQaHo8JAJMukvnP\nsSecgVVQURtCv13Q9xBl5kIVmFiNutuUswpoJ9oBQeEaVHHGT10uUTGDgYWRFZcO\n0c5+Rkqnxjbp5ZefvBC7ujE+EecDyOtli6cq6IzP6CHUqKj/Okag5m5KMdP/NFS1\nolioehSmJoBxiAUVP5TtFrNFoDtUVj5jwWD1IdRtIVMmo+UcwjDiXU9BAFoboHla\nHLaCSghWYfsAxtkf+4yrBdCk1YxF4Pubnxu4y5nRF5CRJKtTpGhqIfzaDzXoCydd\nC4rX6mmu1UimxqL0FDBnTuUmNIwE7aVXFpL8il911QYMS0ELed8WzO/xC4K4dsZK\n90o=\n-----END CERTIFICATE-----"
 }
 
-function getKey(){
+function getKey() {
   return "-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEAro1MakQrfP/3DrPhT8GGAx7gEBh6gh1RkfZAugmBiXszax8D\nlKHRlEonio/EtKYaIsWXjQBsGHdcSkaZBOXAddUUP7if0hdDj5SPf1kGknBHHM6f\nZqGEkW6mmhF+ZTc0edOoSKLki79i/N1nDJ8kjyRMBGlxoYfGHireDTn38+C8rP4w\nVXIEv4FBK6dF49SAJ0CmqfcGuKtxI8qo7aJG7Lx0GLufiDycsjGKvuuwoOBGPnOb\nwRVXcvTQtg5gBGE2xejew3ogeSbdnNAPAG2KdcofyHyRW2kmjF7Am5LmPhP7l01p\nsfl3vdGNStFKhop1wbDs5G8Xc3m0PS/CjjJ+0wIDAQABAoIBAQCOjcFRrDjkDluj\n+05Qh5k95TJSkttCdlVO4pE8HlVXhXGZ06tl8L4r4F/orr+UVW9U5JB/zE97r8eE\ntaF0uXp0AUBXRh3oQ62ejlKfS4Kth9rb8PeHpvOQnpCblRvn560Irc5q+/WxF+3s\n25i0WyhNavRWShNOO4eWzaWpoaUZ2x8C+2uN+uMO4cy56RRHTbF3Z7DBmylFRxvK\n/TapE2PXhEeSeLD9gMNc4iT/5gUaKr5gqUTQWV1Drv59VBl7Z3k+OozesySDOGal\nbQw+1fLurkgdZ7VOTGOdUDbiJTDEt7EHuxyWNp9U/JmA72Ukj/TvCUBcIb0e76oG\n+h/AaFJhAoGBAOiCxSYSpx85diuiCG0ZvGpBnC9YkpBmjVxh2WzfJq7oZ6snlfDg\nb6tDsCBNBddY9gL7fvVdvPMkuAq+XxYdqReRDQMnoehwOmRMoHt7I5TesQHCClUM\noN5jadwPlCNBeCjjYVP9EFmPMRaaIxCXtCFvt1dcGat4NGUBqp+DafOjAoGBAMAv\nllbdBdPe5ciQ+Q7TaVcPXlZMrnv9xb5iyOHWoufV/jUk3BCmANqA8kG1PgS1pufz\ny0jNFjdZnWmtnM2mrhMUB4Q6JHQ2dBO7n3J69iSwqr2+vZB0cfCTRhQLhhA1ZRoh\nRmj44q6ilgFzo/nZxIZTj9+TgZsZrpj/W+AVHnsRAoGAGwJd3n9aNJFbPdRTwEC2\nF23Js+JJHEcdcrbXKAOAHd9Xc5VkoJehwTZatlXcMNjfsxb994jNEz2Xt3/H0eze\nIKOz7ELlVvf6gH46Qj3as0dvLnIY+yo9YbgQqwSQQ8wuJinLu5LxHEY7AJIlMp88\nyImOtbI4NSgAhh88b803OJsCgYBeZMElpude2eLosPPzKTlbDmxaXM1yjwFZ8nES\nI3beAcga2CDSeIaAy8axKVDtxT7WPHMDLeAUjYp4RlJ228AyFKtgcaJIBhrbOlMl\nSmmtOayTB6VZ1yfDbsKDw+kz+tXOkLthgaTs+2RMED1g0WnqRA6tVGjbAjE0am/4\nzsaq0QKBgBufC7E+5mo68GT0dUoHZ54P3y9F0s+t/IPQlCmRWNzYOKuLB5RTPjZF\nZQ2E3ytJuREA6iiC8JpN0zKO+WhbmwtGIn5rrcuUE0TdNHPf85ra62xyEnI3Q77J\ndg1awjfVnHGyyHRwV97T1/MWf8n5kBgqF1F1CJGc0xj7wH07jtAP\n-----END RSA PRIVATE KEY-----"
 }
